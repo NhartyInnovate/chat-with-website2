@@ -1,4 +1,14 @@
-import streamlit as st
-from langchain_community.document_loaders import WebBaseLoader
+from website_loader import load_website
+from text_splitter import split_documents
 
-print("Everything imported successfully!")
+url = "https://python.langchain.com"
+
+docs = load_website(url)
+
+chunks = split_documents(docs)
+
+print(f"Documents: {len(docs)}")
+print(f"Chunks: {len(chunks)}")
+
+print("\nFirst Chunk:")
+print(chunks[0].page_content[:300])
