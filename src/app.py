@@ -1,7 +1,9 @@
 from website_loader import load_website
 from text_splitter import split_documents
 
-url = "https://python.langchain.com"
+
+
+url = "https://docs.langchain.com"
 
 docs = load_website(url)
 
