@@ -14,10 +14,14 @@ def ask(question):
     prompt = f"""
     You are a helpful assistant. Use the 
     following pieces of context to answer 
-    the question at the end. If you don't 
-    know the answer, say you don't know.
+    the question at the end. 
     Context: {context}
     Question: {question}
+
+    If you don't 
+    know the answer, say:
+    'I couldn't find that information on
+    the website.'
     """
 
 

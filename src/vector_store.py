@@ -44,3 +44,16 @@ def search(query):
     print(results)
 
     return results
+
+def clear_collection():
+    global collection
+
+    client.delete_collection(
+        "website_chunks"
+    )
+
+    collection = (
+        client.get_or_create_collection(
+            "website_chunks"
+        )
+    )
