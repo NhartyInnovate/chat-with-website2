@@ -6,7 +6,7 @@ model = SentenceTransformer("all-MiniLM-L6-v2")
 
 
 client = chromadb.Client()
-collection = client.create_collection(
+collection = client.get_or_create_collection(
     name="website_chunks"
 )
 
@@ -48,9 +48,12 @@ def search(query):
 def clear_collection():
     global collection
 
-    client.delete_collection(
-        "website_chunks"
-    )
+    try:
+        client.delete_collection(
+            "website_chunks"
+        )
+    except:
+        pass
 
     collection = (
         client.get_or_create_collection(

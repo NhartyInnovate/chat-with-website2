@@ -1,23 +1,97 @@
 from indexer import index_website
 from rag_pipeline import ask
+import streamlit as st
 
-url = input(
-    "Enter website URL: "
+st.set_page_config(
+    page_title="Chat with Any Website",
+    page_icon="🌐"
 )
 
-index_website(url)
+# Page Config
+st.title(
+    "🌐 Chat with Any Website"
+)
 
-while True:
-    question = input(
-        "\nAsk a question: "
+# Session State
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
+if "website_loaded" not in st.session_state:
+    st.session_state.website_loaded = False
+
+# Sidebar for website input and indexing
+with st.sidebar:
+
+    st.header("Website")
+
+    url = st.text_input(
+        "Enter Website URL"
     )
 
-    if question.lower() == "quit":
-        break
+    process = st.button(
+        "Process Website"
+    )
 
-    answer = ask(question)
+if process:
 
-    print("\nAnswer:")
-    
-    print(answer)
+    if not url:
+        st.error(
+            "Please enter a URL."
+        )
 
+    else:
+        st.session_state.chat_history = []
+
+        with st.spinner(
+            "Processing website..."
+        ):
+            index_website(url)
+
+        st.session_state.website_loaded = True
+
+        st.success(
+            "Website indexed successfully!"
+        )
+
+
+for role, message in (
+    st.session_state.chat_history
+):
+
+    with st.chat_message(role):
+        st.markdown(message)
+
+question = st.chat_input(
+    "Ask something..."
+)
+
+if question:
+
+    if not st.session_state.website_loaded:
+        st.warning(
+            "Please process a website first."
+        )
+
+    else:
+
+        with st.chat_message("user"):
+            st.markdown(question)
+
+        with st.spinner(
+            "Thinking..."
+        ):
+            answer = ask(
+                question,
+                st.session_state.chat_history
+            )
+
+        with st.chat_message("assistant"):
+            st.markdown(answer)
+
+        st.session_state.chat_history.append(
+            ("user", question)
+        )
+
+        st.session_state.chat_history.append(
+            ("assistant", answer)
+        )
