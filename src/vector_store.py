@@ -78,3 +78,20 @@ def get_collection(url):
             name=collection_name
         )
     )
+
+def get_collections():
+    collections = (
+        client.list_collections()
+    )
+    return [
+        collection.name
+        for collection in collections
+    ]
+
+def display_name(
+    collection_name
+):
+    return (
+        collection_name
+        .replace("_", ".")
+    )

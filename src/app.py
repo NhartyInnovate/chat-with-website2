@@ -1,6 +1,9 @@
 from indexer import index_website
 from rag_pipeline import ask
 import streamlit as st
+from vector_store import (
+    get_collections
+)
 
 st.set_page_config(
     page_title="Chat with Any Website",
@@ -35,12 +38,46 @@ with st.sidebar:
         "Process Website"
     )
 
-if process:
+    collections = get_collections()
 
-    if not url:
-        st.error(
-            "Please enter a URL."
+    if collections:
+        st.divider()
+
+        st.subheader(
+            "📚 Previously Indexed Websites"
         )
+
+        for collection in collections:
+
+            display_name = (
+                collection
+                .replace("_", ".")
+            )
+
+            if st.button(
+                display_name,
+                key=collection
+            ):
+
+                st.session_state.chat_history = []
+
+                st.session_state.current_website = (
+                    "https://"
+                    +
+                    display_name
+                )
+
+                st.session_state.website_loaded = True
+
+                st.success(
+                    f"Loaded {display_name}"
+                )
+    if process:
+
+        if not url:
+            st.error(
+                "Please enter a URL."
+            )
 
     else:
         st.session_state.chat_history = []
