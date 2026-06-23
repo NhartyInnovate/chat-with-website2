@@ -1,12 +1,10 @@
 from crawler import get_links
 from website_loader import load_website
 from text_splitter import split_documents
-from vector_store import clear_collection
 from vector_store import add_chunks
 
 
 def index_website(url):
-    clear_collection()
 
     urls = get_links(
         url,
@@ -20,8 +18,9 @@ def index_website(url):
     )
 
     print("URLs to load:")
-    for url in urls:
-        print(url)
+
+    for page_url in urls:
+        print(page_url)
 
     docs = load_website(urls)
 
@@ -38,7 +37,7 @@ def index_website(url):
 
     chunks = split_documents(docs)
 
-    add_chunks(chunks)
+    add_chunks(chunks, url)
 
     print(
         f"Indexed {len(chunks)} chunks."
@@ -46,5 +45,5 @@ def index_website(url):
 
     print("Pages Found:")
 
-    for url in urls:
-        print(url)
+    for page_url in urls:
+        print(page_url)

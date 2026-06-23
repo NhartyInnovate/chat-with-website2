@@ -19,6 +19,9 @@ if "chat_history" not in st.session_state:
 if "website_loaded" not in st.session_state:
     st.session_state.website_loaded = False
 
+if "current_website" not in st.session_state:
+    st.session_state.current_website = None
+
 # Sidebar for website input and indexing
 with st.sidebar:
 
@@ -41,6 +44,8 @@ if process:
 
     else:
         st.session_state.chat_history = []
+        st.session_state.website_loaded = False
+        st.session_state.current_website = None
 
         try:
             with st.spinner(
@@ -48,6 +53,7 @@ if process:
             ):
                 index_website(url)
 
+            st.session_state.current_website = url
             st.session_state.website_loaded = True
 
             st.success(
@@ -58,7 +64,6 @@ if process:
             st.error(
                 f"Could not process website: {e}"
             )
-
 
 for role, message in (
     st.session_state.chat_history
@@ -86,9 +91,15 @@ if question:
         with st.spinner(
             "Thinking..."
         ):
+            if not st.session_state.current_website:
+                st.warning(
+                    "Please process a website first."
+                )
+                        
             answer, sources = ask(
                 question,
-                st.session_state.chat_history
+                st.session_state.chat_history,
+                st.session_state.current_website
             )
 
         with st.chat_message("assistant"):
@@ -111,3 +122,4 @@ if question:
         st.session_state.chat_history.append(
             ("assistant", answer)
         )
+

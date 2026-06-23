@@ -3,14 +3,14 @@ from vector_store import search
 
 
 
-def ask(question, chat_history):
+def ask(question, chat_history, url):
     standalone_question = rewrite_question(question, chat_history)
     print(
     f"Standalone Question: "
     f"{standalone_question}"
     )
     results = search(
-    standalone_question
+    standalone_question, url
 )
 
     if not results["documents"][0]:

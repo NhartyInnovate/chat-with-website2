@@ -1,5 +1,6 @@
 from sentence_transformers import SentenceTransformer
 import chromadb
+from urllib.parse import urlparse
 
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -8,20 +9,18 @@ model = SentenceTransformer("all-MiniLM-L6-v2")
 client = chromadb.PersistentClient(
     path="./chroma_db"
 )
-collection = (
-    client.get_or_create_collection(
-        name="website_chunks"
-    )
-)
 
-def add_chunks(chunks):
+def add_chunks(chunks, url):
+    collection = get_collection(url)
     for i, chunk in enumerate(chunks):
         embedding = model.encode(
             chunk.page_content
         ).tolist()
         
         collection.add(
-            ids=[str(i)],
+            ids=[
+                f"chunk_{i}"
+            ],
             documents=[chunk.page_content],
             embeddings=[embedding],
             metadatas=[
@@ -42,7 +41,8 @@ def add_chunks(chunks):
             f"Length: {len(chunk.page_content)}"
         )
 
-def search(query):
+def search(query, url):
+    collection = get_collection(url)
     query_embedding = model.encode(
         query
     ).tolist()
@@ -58,18 +58,23 @@ def search(query):
 
     return results
 
-def clear_collection():
-    global collection
 
-    try:
-        client.delete_collection(
-            "website_chunks"
-        )
-    except:
-        pass
+def get_collection_name(url):
+    parsed = urlparse(url)
 
-    collection = (
+    return (
+        parsed.netloc
+        .replace(".", "_")
+        .replace("-", "_")
+    )
+
+def get_collection(url):
+    collection_name = (
+        get_collection_name(url)
+    )
+
+    return (
         client.get_or_create_collection(
-            "website_chunks"
+            name=collection_name
         )
     )
