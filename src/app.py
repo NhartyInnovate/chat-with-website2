@@ -80,13 +80,23 @@ if question:
         with st.spinner(
             "Thinking..."
         ):
-            answer = ask(
+            answer, sources = ask(
                 question,
                 st.session_state.chat_history
             )
 
         with st.chat_message("assistant"):
+
             st.markdown(answer)
+
+            st.markdown("---")
+            st.markdown("**Sources:**")
+
+            with st.expander("Sources"):
+                for source in sources:
+                    st.write(
+                        f"{source['source']}"
+                    )
 
         st.session_state.chat_history.append(
             ("user", question)

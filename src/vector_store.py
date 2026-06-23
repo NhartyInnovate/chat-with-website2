@@ -19,7 +19,16 @@ def add_chunks(chunks):
         collection.add(
             ids=[str(i)],
             documents=[chunk.page_content],
-            embeddings=[embedding]
+            embeddings=[embedding],
+            metadatas=[
+                {
+                    "chunk": i,
+                    "source": chunk.metadata.get(
+                        "source",
+                        "Unknown"
+                    )
+                }
+            ]
         )
 
         print(
@@ -37,7 +46,7 @@ def search(query):
 
     results = collection.query(
         query_embeddings=[query_embedding],
-        n_results=2
+        n_results=5
     )
 
     print(f"Question: {query}")

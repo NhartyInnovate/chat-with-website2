@@ -51,7 +51,9 @@ def ask(question, chat_history):
 
     answer = response.content
 
-    return answer
+    sources = results["metadatas"][0]
+
+    return answer, sources
 
 
 def rewrite_question(question, chat_history):
