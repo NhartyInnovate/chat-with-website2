@@ -19,8 +19,16 @@ def index_website(url):
         f"Found {len(urls)} pages to index."
     )
 
+    print("URLs to load:")
+    for url in urls:
+        print(url)
 
     docs = load_website(urls)
+
+    if not docs:
+        raise Exception(
+            "Could not load website."
+        )
 
     for doc in docs:
         print(

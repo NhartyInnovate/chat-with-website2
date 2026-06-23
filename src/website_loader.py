@@ -6,6 +6,14 @@ def load_website(urls):
         web_path=urls
     )
 
-    docs = loader.load()
+    try:
+        docs = loader.load()
+        return docs
+
+    except Exception as e:
+        print(
+            f"Loading Error: {e}"
+        )
+        return []
     
     return docs

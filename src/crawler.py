@@ -29,6 +29,8 @@ def get_links(start_url, max_pages=20):
             )
 
             if (
+                parsed.scheme in ["http", "https"]
+                and
                 parsed.netloc == domain
                 and
                 absolute_url not in visited
@@ -39,6 +41,8 @@ def get_links(start_url, max_pages=20):
                 urls.append(
                     absolute_url
                 )
+
+                print(absolute_url)
 
             if len(urls) >= max_pages:
                 break

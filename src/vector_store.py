@@ -5,9 +5,13 @@ import chromadb
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
 
-client = chromadb.Client()
-collection = client.get_or_create_collection(
-    name="website_chunks"
+client = chromadb.PersistentClient(
+    path="./chroma_db"
+)
+collection = (
+    client.get_or_create_collection(
+        name="website_chunks"
+    )
 )
 
 def add_chunks(chunks):

@@ -42,16 +42,22 @@ if process:
     else:
         st.session_state.chat_history = []
 
-        with st.spinner(
-            "Processing website..."
-        ):
-            index_website(url)
+        try:
+            with st.spinner(
+                "Processing website..."
+            ):
+                index_website(url)
 
-        st.session_state.website_loaded = True
+            st.session_state.website_loaded = True
 
-        st.success(
-            "Website indexed successfully!"
-        )
+            st.success(
+                "Website indexed successfully!"
+            )
+
+        except Exception as e:
+            st.error(
+                f"Could not process website: {e}"
+            )
 
 
 for role, message in (
