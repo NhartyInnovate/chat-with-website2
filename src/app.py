@@ -72,35 +72,43 @@ with st.sidebar:
                 st.success(
                     f"Loaded {display_name}"
                 )
+
+    st.write(
+        f"process={process}"
+    )
     if process:
+
+        st.write(
+        "ENTERED PROCESS BLOCK"
+    )
 
         if not url:
             st.error(
                 "Please enter a URL."
             )
 
-    else:
-        st.session_state.chat_history = []
-        st.session_state.website_loaded = False
-        st.session_state.current_website = None
+        else:
+            st.session_state.chat_history = []
+            st.session_state.website_loaded = False
+            st.session_state.current_website = None
 
-        try:
-            with st.spinner(
-                "Processing website..."
-            ):
-                index_website(url)
+            try:
+                with st.spinner(
+                    "Processing website..."
+                ):
+                    index_website(url)
 
-            st.session_state.current_website = url
-            st.session_state.website_loaded = True
+                st.session_state.current_website = url
+                st.session_state.website_loaded = True
 
-            st.success(
-                "Website indexed successfully!"
-            )
+                st.success(
+                    "Website indexed successfully!"
+                )
 
-        except Exception as e:
-            st.error(
-                f"Could not process website: {e}"
-            )
+            except Exception as e:
+                st.error(
+                    f"Could not process website: {e}"
+                )
 
 for role, message in (
     st.session_state.chat_history
