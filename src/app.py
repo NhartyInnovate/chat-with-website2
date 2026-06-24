@@ -73,14 +73,7 @@ with st.sidebar:
                     f"Loaded {display_name}"
                 )
 
-    st.write(
-        f"process={process}"
-    )
     if process:
-
-        st.write(
-        "ENTERED PROCESS BLOCK"
-    )
 
         if not url:
             st.error(
