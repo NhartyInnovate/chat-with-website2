@@ -15,18 +15,18 @@ st.set_page_config(
 
 # Page Config
 st.title(
-    "🌐 Chat with Any Website"
+    "🧠 AI Knowledge Assistant"
 )
 
 # Session State
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-if "website_loaded" not in st.session_state:
-    st.session_state.website_loaded = False
+if "source_loaded" not in st.session_state:
+    st.session_state.source_loaded = False
 
-if "current_website" not in st.session_state:
-    st.session_state.current_website = None
+if "current_source" not in st.session_state:
+    st.session_state.current_source = None
 
 # Sidebar for website input and indexing
 with st.sidebar:
@@ -55,7 +55,7 @@ with st.sidebar:
         )
 
     process = st.button(
-    "Process Website"
+    "Process Source"
     )
 
     
@@ -65,7 +65,7 @@ with st.sidebar:
         st.divider()
 
         st.subheader(
-            "📚 Previously Indexed Websites"
+            "📚 Previously Indexed Sources"
         )
 
         for collection in collections:
@@ -82,13 +82,13 @@ with st.sidebar:
 
                 st.session_state.chat_history = []
 
-                st.session_state.current_website = (
+                st.session_state.current_source = (
                     "https://"
                     +
                     display_name
                 )
 
-                st.session_state.website_loaded = True
+                st.session_state.source_loaded = True
 
                 st.success(
                     f"Loaded {display_name}"
@@ -105,8 +105,8 @@ with st.sidebar:
 
             else:
                 st.session_state.chat_history = []
-                st.session_state.website_loaded = False
-                st.session_state.current_website = None
+                st.session_state.source_loaded = False
+                st.session_state.current_source = None
 
                 try:
                     with st.spinner(
@@ -114,11 +114,11 @@ with st.sidebar:
                     ):
                         index_website(url)
 
-                    st.session_state.current_website = url
-                    st.session_state.website_loaded = True
+                    st.session_state.current_source = url
+                    st.session_state.source_loaded = True
 
                     st.success(
-                        "Website indexed successfully!"
+                        "🌐 Website indexed successfully!"
                     )
 
                 except Exception as e:
@@ -154,12 +154,12 @@ with st.sidebar:
                         
                     index_pdf(file_path)
 
-                    st.session_state.website_loaded = True
+                    st.session_state.source_loaded = True
 
                     st.session_state.current_website = file_path
 
                     st.success(
-                        "PDF indexed successfully!"
+                        "📄 PDF indexed successfully!"
                     )
 
                 except Exception as e:
@@ -180,9 +180,9 @@ question = st.chat_input(
 
 if question:
 
-    if not st.session_state.website_loaded:
+    if not st.session_state.source_loaded:
         st.warning(
-            "Please process a website first."
+            "Please process a source first."
         )
 
     else:
@@ -193,15 +193,15 @@ if question:
         with st.spinner(
             "Thinking..."
         ):
-            if not st.session_state.current_website:
+            if not st.session_state.current_source:
                 st.warning(
-                    "Please process a website first."
+                    "Please process a source first."
                 )
                         
             answer, sources = ask(
                 question,
                 st.session_state.chat_history,
-                st.session_state.current_website
+                st.session_state.current_source
             )
 
         with st.chat_message("assistant"):
