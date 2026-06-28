@@ -4,6 +4,9 @@ import streamlit as st
 from vector_store import (
     get_collections
 )
+from pdf_indexer import index_pdf
+import os
+
 
 st.set_page_config(
     page_title="Chat with Any Website",
@@ -28,16 +31,34 @@ if "current_website" not in st.session_state:
 # Sidebar for website input and indexing
 with st.sidebar:
 
-    st.header("Website")
+    st.header("Knowledge Integration Engine")
 
-    url = st.text_input(
-        "Enter Website URL"
+    source_type = st.radio(
+        "Make a Pick",
+        [
+            "Website", 
+            "PDF"
+        ]
+
     )
+
+    if source_type == "Website":
+        
+        url = st.text_input(
+            "Enter Website url..."
+        )
+
+    else:
+        uploaded_file = st.file_uploader(
+            "Upload PDF",
+            type=["pdf"]
+        )
 
     process = st.button(
-        "Process Website"
+    "Process Website"
     )
 
+    
     collections = get_collections()
 
     if collections:
@@ -75,33 +96,76 @@ with st.sidebar:
 
     if process:
 
-        if not url:
-            st.error(
-                "Please enter a URL."
-            )
+        if source_type == "Website":
 
-        else:
-            st.session_state.chat_history = []
-            st.session_state.website_loaded = False
-            st.session_state.current_website = None
-
-            try:
-                with st.spinner(
-                    "Processing website..."
-                ):
-                    index_website(url)
-
-                st.session_state.current_website = url
-                st.session_state.website_loaded = True
-
-                st.success(
-                    "Website indexed successfully!"
-                )
-
-            except Exception as e:
+            if not url:
                 st.error(
-                    f"Could not process website: {e}"
+                    "Please enter a URL."
                 )
+
+            else:
+                st.session_state.chat_history = []
+                st.session_state.website_loaded = False
+                st.session_state.current_website = None
+
+                try:
+                    with st.spinner(
+                        "Processing website..."
+                    ):
+                        index_website(url)
+
+                    st.session_state.current_website = url
+                    st.session_state.website_loaded = True
+
+                    st.success(
+                        "Website indexed successfully!"
+                    )
+
+                except Exception as e:
+                    st.error(
+                        f"Could not process website: {e}"
+                    )
+        
+        if source_type == "PDF":
+
+            if not uploaded_file:
+
+                st.error(
+                    "Please upload a PDF."
+                )
+
+            else:
+                st.session_state.chat_history = []
+
+                try:
+                    with st.spinner(
+                        "Processing PDF..."
+                    ):
+                        file_path = os.path.join(
+                        "data",
+                        "uploads",
+                        uploaded_file.name
+                    )
+
+                    with open(file_path, "wb") as f:
+                        f.write(
+                            uploaded_file.getbuffer()
+                        )
+                        
+                    index_pdf(file_path)
+
+                    st.session_state.website_loaded = True
+
+                    st.session_state.current_website = file_path
+
+                    st.success(
+                        "PDF indexed successfully!"
+                    )
+
+                except Exception as e:
+                    st.error(
+                        f"Could not process PDF: {e}"
+                    )
 
 for role, message in (
     st.session_state.chat_history
