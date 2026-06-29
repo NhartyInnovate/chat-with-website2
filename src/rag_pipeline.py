@@ -1,5 +1,6 @@
 from llm import llm
 from vector_store import search
+from router import classify_question
 
 def is_small_talk(question):
 
@@ -21,32 +22,39 @@ def is_small_talk(question):
 
     return question in small_talk
 
+def get_small_talk_response(question):
+
+    responses = {
+        "hi": "Hello! 👋",
+        "hello": "Hi there! 👋",
+        "hey": "Hey! 😊",
+        "good morning": "Good morning! ☀️",
+        "good afternoon": "Good afternoon! 😊",
+        "good evening": "Good evening! 🌙",
+        "thanks": "You're welcome! 😊",
+        "thank you": "You're very welcome! 😊",
+        "bye": "Goodbye! Have a great day! 👋",
+        "goodbye": "Take care! 👋",
+        "how are you": (
+            "I'm doing great! "
+            "How can I help you today?"
+        )
+    }
+
+    return responses.get(
+        question.lower().strip(),
+        "Hello! 👋"
+    )
+
+    
 def ask(question, chat_history, source):
 
-    if is_small_talk(question):
+    message_type = classify_question(question)
 
-        responses = {
-            "hi": "Hello! 👋",
-            "hello": "Hi there! 👋",
-            "hey": "Hey! 😊",
-            "good morning": "Good morning! ☀️",
-            "good afternoon": "Good afternoon! 😊",
-            "good evening": "Good evening! 🌙",
-            "thanks": "You're welcome! 😊",
-            "thank you": "You're very welcome! 😊",
-            "bye": "Goodbye! Have a great day! 👋",
-            "goodbye": "Take care! 👋",
-            "how are you": (
-                "I'm doing great! "
-                "How can I help you today?"
-            )
-        }
+    if message_type == "small_talk":
 
         return (
-            responses.get(
-            question.lower().strip(),
-            "Hello! 👋"
-            ),
+            get_small_talk_response(question),
             []
         )
 
@@ -145,3 +153,5 @@ def rewrite_question(question, chat_history):
     response = llm.invoke(prompt)
 
     return response.content
+
+
