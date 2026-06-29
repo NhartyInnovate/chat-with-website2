@@ -208,14 +208,18 @@ if question:
 
             st.markdown(answer)
 
-            st.markdown("---")
-            st.markdown("**Sources:**")
+            if sources:
 
-            with st.expander("Sources"):
-                for source in sources:
-                    st.write(
-                        f"{source['source']}"
-                    )
+                st.markdown("---")
+                st.markdown("**Sources:**")
+
+                with st.expander("Sources"):
+
+                    for source in sources:
+
+                        st.write(
+                            source["source"]
+                        )
 
         st.session_state.chat_history.append(
             ("user", question)

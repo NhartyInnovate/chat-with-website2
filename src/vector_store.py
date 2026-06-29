@@ -3,15 +3,28 @@ import chromadb
 from urllib.parse import urlparse
 import os
 import re
+import streamlit as st
 
 
+@st.cache_resource
+def load_model():
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
+    return SentenceTransformer(
+        "all-MiniLM-L6-v2"
+    )
 
 
-client = chromadb.PersistentClient(
-    path="./data/chroma_db"
-)
+model = load_model()
+
+@st.cache_resource
+def get_client():
+    
+    return chromadb.PersistentClient(
+        path="./data/chroma_db"
+    )
+
+
+client = get_client()
 
 def add_chunks(chunks, url):
 
