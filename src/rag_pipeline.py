@@ -46,7 +46,7 @@ def get_small_talk_response(question):
         "Hello! 👋"
     )
 
-    
+
 def ask(question, chat_history, source):
 
     message_type = classify_question(question)
@@ -60,18 +60,18 @@ def ask(question, chat_history, source):
 
 
     standalone_question = rewrite_question(question, chat_history)
-    print(
-    f"Standalone Question: "
-    f"{standalone_question}"
-    )
+    # print(
+    # f"Standalone Question: "
+    # f"{standalone_question}"
+    # )
     results = search(
     standalone_question, source
 )
 
     if not results["documents"][0]:
         return (
-            "I couldn't find that "
-            "information on the website."
+            "I couldn't find that information in this source.",
+            []
         )
 
     context = "\n\n".join(

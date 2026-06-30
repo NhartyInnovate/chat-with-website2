@@ -2,6 +2,7 @@ from indexer import index_website
 from rag_pipeline import ask
 import streamlit as st
 from vector_store import (
+    get_collection_name,
     get_collections
 )
 from pdf_indexer import index_pdf
@@ -70,23 +71,16 @@ with st.sidebar:
 
         for collection in collections:
 
-            display_name = (
-                collection
-                .replace("_", ".")
-            )
+            display_name = collection["display_name"]
 
             if st.button(
                 display_name,
-                key=collection
+                key=collection["name"]
             ):
 
                 st.session_state.chat_history = []
 
-                st.session_state.current_source = (
-                    "https://"
-                    +
-                    display_name
-                )
+                st.session_state.current_source = collection["name"]
 
                 st.session_state.source_loaded = True
 
@@ -112,14 +106,19 @@ with st.sidebar:
                     with st.spinner(
                         "Processing website..."
                     ):
+
                         index_website(url)
+                        
+                        collection_name = get_collection_name(url)
 
-                    st.session_state.current_source = url
-                    st.session_state.source_loaded = True
+                        print("Returned Collection:", collection_name)
 
-                    st.success(
-                        "🌐 Website indexed successfully!"
-                    )
+                        st.session_state.current_source = collection_name
+                        st.session_state.source_loaded = True
+
+                        st.success(
+                            "🌐 Website indexed successfully!"
+                        )
 
                 except Exception as e:
                     st.error(
@@ -138,25 +137,30 @@ with st.sidebar:
                 st.session_state.chat_history = []
 
                 try:
-                    with st.spinner(
-                        "Processing PDF..."
-                    ):
-                        file_path = os.path.join(
-                        "data",
-                        "uploads",
-                        uploaded_file.name
-                    )
+                    with st.spinner("Processing PDF"):
 
-                    with open(file_path, "wb") as f:
-                        f.write(
-                            uploaded_file.getbuffer()
+                        upload_dir = os.path.join(
+                            "data",
+                            "uploads"
                         )
-                        
-                    index_pdf(file_path)
 
+                        os.makedirs(upload_dir, exist_ok=True)
+
+                        file_path = os.path.join(
+                            upload_dir,
+                            uploaded_file.name
+                        )
+
+                        with open(file_path, "wb") as f:
+                            f.write(uploaded_file.getbuffer())
+
+                        index_pdf(file_path)
+
+                        collection_name = get_collection_name(file_path)
+
+                    st.session_state.current_source = collection_name
                     st.session_state.source_loaded = True
-
-                    st.session_state.current_website = file_path
+                    
 
                     st.success(
                         "📄 PDF indexed successfully!"
@@ -197,7 +201,10 @@ if question:
                 st.warning(
                     "Please process a source first."
                 )
-                        
+
+            print("Current Source:", st.session_state.current_source)
+            print("Type:", type(st.session_state.current_source))  
+                      
             answer, sources = ask(
                 question,
                 st.session_state.chat_history,

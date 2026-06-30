@@ -1,7 +1,7 @@
 from crawler import get_links
 from website_loader import load_website
 from text_splitter import split_documents
-from vector_store import add_chunks
+from vector_store import add_chunks, get_collection_name
 from vector_store import get_indexed_pages
 
 def index_website(url):
@@ -33,7 +33,7 @@ def index_website(url):
             "Everything is already indexed."
         )
 
-        return
+        return get_collection_name(url)
 
     docs = load_website(new_urls)
 
@@ -60,3 +60,5 @@ def index_website(url):
 
     for page_url in urls:
         print(page_url)
+
+    return get_collection_name(url)

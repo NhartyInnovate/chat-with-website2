@@ -79,11 +79,19 @@ def search(query, url):
 
 def get_collection_name(source):
 
+    if (
+        source.startswith("website_")
+        or
+        source.startswith("pdf_")
+    ):
+        return source
+
     if source.startswith("http"):
 
         parsed = urlparse(source)
 
         return (
+            "website_" +
             parsed.netloc
             .replace(".", "_")
             .replace("-", "_")
@@ -99,29 +107,69 @@ def get_collection_name(source):
         filename
     )
 
-    filename = filename.strip("._-")
+    return (
+        "pdf_" +
+        filename.strip("_")
+    )
 
-    return filename
+def get_collection(source):
 
-def get_collection(url):
+    print(f"Source: {source}")
+    print(f"Type: {type(source)}")
 
-    collection_name = get_collection_name(url)
+    if (
+        source.startswith("website_")
+        or source.startswith("pdf_")
+    ):
+    
+        collection_name = source
 
-    print(f"URL/Source: {url}")
-    print(f"Collection Name: {collection_name}")
+    else:
+        collection_name = (
+            get_collection_name(source)
+        )
 
     return client.get_or_create_collection(
         name=collection_name
     )
 
 def get_collections():
-    collections = (
-        client.list_collections()
-    )
-    return [
-        collection.name
-        for collection in collections
-    ]
+
+    collections = client.list_collections()
+
+    results = []
+
+    for collection in collections:
+
+        name = collection.name
+
+        if name.endswith("_pdf"):
+
+            source_type = "pdf"
+
+            display_name = (
+                name[:-4]
+                .replace("_", " ")
+            )
+
+        else:
+
+            source_type = "website"
+
+            display_name = (
+                name
+                .replace("_", ".")
+            )
+
+        results.append(
+            {
+                "name": name,
+                "display_name": display_name,
+                "type": source_type
+            }
+        )
+
+    return results
 
 def display_name(
     collection_name

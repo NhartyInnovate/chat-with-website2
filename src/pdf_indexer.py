@@ -20,10 +20,9 @@ def index_pdf(file_path):
         )
 
     chunks = split_documents(docs)
+
     add_chunks(chunks, file_path)
 
     print(
-    f"Indexed {len(chunks)} chunks."
-)
-    return
-
+        f"Indexed {len(chunks)} chunks."
+    )
